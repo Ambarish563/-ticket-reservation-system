@@ -1,3 +1,6 @@
+<img src="https://thumbs.dreamstime.com/z/online-tickets-service-purchase-check-plane-online-tickets-service-purchase-cartoon-flat-vector-illustration-man-woman-use-156679240.jpg" alt="Sample Image" width="400" height="300">
+
+
 # Overview
 
 * In this assignment, you will implement a ticket reservation system that uses goroutines and channels to simulate a group of customers reserving tickets from a group of ticket agents. The system will allow customers to reserve a ticket and receive a confirmation, while ticket agents will sell tickets to customers who have made a reservation. The goal of this assignment is to provide hands-on experience in using goroutines and channels in a concurrent application.
