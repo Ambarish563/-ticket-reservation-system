@@ -1,14 +1,13 @@
-package tickets_test
+package tickets
 
 import (
 	"io/ioutil"
-	ticket "myproject/tickets"
 	"os"
 	"testing"
 )
 
 func TestReservation_CheckAvailability(t *testing.T) {
-	r := ticket.NewReservation(10)
+	r := NewReservation(10)
 	if !r.CheckAvailability(5) {
 		t.Errorf("expected true, got false")
 	}
@@ -18,7 +17,7 @@ func TestReservation_CheckAvailability(t *testing.T) {
 }
 
 func TestReservation_ReserveSeats(t *testing.T) {
-	r := ticket.NewReservation(10)
+	r := NewReservation(10)
 	seats, err := r.ReserveSeats(5)
 	if err != nil {
 		t.Errorf("expected nil error, got %v", err)
@@ -36,7 +35,7 @@ func TestReservation_ReserveSeats(t *testing.T) {
 }
 
 func TestReservation_CancelReservation(t *testing.T) {
-	r := ticket.NewReservation(10)
+	r := NewReservation(10)
 	seats, _ := r.ReserveSeats(5)
 	err := r.CancelReservation(seats)
 	if err != nil {
@@ -53,7 +52,7 @@ func TestReservation_CancelReservation(t *testing.T) {
 }
 
 func TestConfirmation_GenerateConfirmationCode(t *testing.T) {
-	c := ticket.NewConfirmation([]int{1, 2, 3, 4, 5})
+	c := NewConfirmation([]int{1, 2, 3, 4, 5})
 	code := c.GenerateConfirmationCode()
 	if code == "" {
 		t.Errorf("expected non-empty code, got empty string")
@@ -64,7 +63,7 @@ func TestConfirmation_GenerateConfirmationCode(t *testing.T) {
 }
 
 func TestConfirmation_PrintConfirmationDetails(t *testing.T) {
-	c := ticket.NewConfirmation([]int{1, 2, 3})
+	c := NewConfirmation([]int{1, 2, 3})
 
 	// Capture output from PrintConfirmationDetails
 	oldOutput := os.Stdout
