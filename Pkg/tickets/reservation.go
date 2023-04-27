@@ -14,7 +14,7 @@ type Reservation struct {
 }
 
 // NewReservation(numSeats int) *Reservation: a constructor function that creates a new Reservation\n
-// object with a seats field of length numSeats (all initially set to false).
+// object with a seats field of length numSeats (all initially set to false)..
 
 func NewReservation(numSeats int) *Reservation {
 	return &Reservation{seats: make([]bool, numSeats)}
