@@ -23,4 +23,6 @@ jobs:
       run: go mod download
 
     - name: Test
-      run: go test ./Pkg/tickets/reservation_test.go
+      run: |
+        cd Pkg/tickets
+        go test ./...
