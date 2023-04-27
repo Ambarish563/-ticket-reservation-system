@@ -1,4 +1,4 @@
-<img src="https://thumbs.dreamstime.com/z/online-tickets-service-purchase-check-plane-online-tickets-service-purchase-cartoon-flat-vector-illustration-man-woman-use-156679240.jpg" alt="Sample Image" width="400" height="300">
+<img src="https://cdn.sriggle.tech/kantents/production/1/1345/09/6a505ba0-0302-4df7-a89d-e963a579c172.webp" alt="Sample Image" width="400" height="300">
 
 
 # Overview
@@ -18,15 +18,18 @@
 * The Reservation type should have methods for checking seat availability, reserving seats, and canceling reservations. These methods should use channels to communicate with other goroutines and ensure thread safety.
 * The Confirmation type should have methods for generating confirmation codes and printing confirmation details to the console.
 * The implementation should be free of deadlock, race conditions, and livelock.
-* The implementation should handle concurrent access to the reservation system and ensure that reservations are not double-booked.
-* The implementation should support multiple users making reservations simultaneously.
-* The reservation system should only allow valid inputs for the number of seats and seat numbers. Invalid inputs should be rejected and an error message should be displayed.
-* The main.go file should not be edited and should simulate user interactions with the reservation system.
+* The reservation system should only allow valid inputs for the number of seats and seat numbers.
+* The reservation_test.go file should not be edited.
 * You should only edit the reservation.go file in the ticket package.
 * Your implementation should use channels and goroutines to implement concurrency in the reservation system.
 * You should not use any external libraries other than the Go standard library.
 * The code should compile with the most recent version of the Go compiler.
 * The program should not panic under any circumstances.
+
+**Motivation**
+
+* Concurrency is an increasingly important concept in modern programming, as more and more applications are designed to take advantage of multiple processors and distributed systems. Go's built-in support for concurrency makes it a popular choice for building highly-scalable applications that can handle large numbers of users and requests. This assignment will help students understand how to use goroutines and channels to build concurrent applications in Go.
+
 
 **Submission**
 
