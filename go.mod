@@ -1,3 +1,3 @@
-module myproject
+module tickets
 
 go 1.19
