@@ -19,6 +19,7 @@
 * The Confirmation type should have methods for generating confirmation codes and printing confirmation details to the console.
 * The implementation should be free of deadlock, race conditions, and livelock.
 * The reservation system should only allow valid inputs for the number of seats and seat numbers.
+* There are few test functions in the reservaton_test.go. 
 * The reservation_test.go file should not be edited.
 * You should only edit the reservation.go file in the ticket package.
 * Your implementation should use channels and goroutines to implement concurrency in the reservation system.
@@ -34,4 +35,5 @@
 **Submission**
 
 * Commit and push your working code to your GIT repository.
-* Ensure all tests pass otherwise you will receive no credit.
+* Ensure all tests pass in the reservation_test.go otherwise you will receive no credit.
+* Go to Pkg/tickets directory in terminal and run go test ./... , it will run all the test cases in reservation_test.go.
