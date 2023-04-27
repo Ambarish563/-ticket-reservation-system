@@ -28,21 +28,38 @@ func (r *Reservation) CheckAvailability(numSeats int) bool {
 	if numSeats > len(r.seats) {
 		return false
 	}
+
+	// Create a channel to communicate the result of seat availability checks.
+	available := make(chan bool)
+
+	// Start a goroutine to check the availability of each seat in a separate thread.
 	for i := 0; i < len(r.seats); i++ {
-		if !r.seats[i] {
-			available := true
-			for j := 1; j < numSeats && i+j < len(r.seats); j++ {
-				if r.seats[i+j] {
-					available = false
-					i += j
-					break
+		go func(i int) {
+			if !r.seats[i] {
+				// Check the availability of numSeats seats starting from seat i.
+				// If any of the seats is already reserved, mark the range as unavailable.
+				for j := 1; j < numSeats && i+j < len(r.seats); j++ {
+					if r.seats[i+j] {
+						available <- false
+						return
+					}
 				}
+				// If all numSeats seats starting from seat i are available, mark the range as available.
+				available <- true
+			} else {
+				// If seat i is already reserved, mark the range as unavailable.
+				available <- false
 			}
-			if available {
-				return true
-			}
+		}(i)
+	}
+
+	// Wait for all goroutines to finish and collect the results of seat availability checks.
+	for i := 0; i < len(r.seats); i++ {
+		if <-available {
+			return true
 		}
 	}
+
 	return false
 }
 
@@ -54,44 +71,85 @@ func (r *Reservation) ReserveSeats(numSeats int) ([]int, error) {
 	if numSeats > len(r.seats) {
 		return nil, errors.New("not enough seats available")
 	}
-	var seats []int
-	for i := 0; i <= len(r.seats)-numSeats; i++ {
-		if !r.seats[i] {
-			available := true
-			for j := 1; j < numSeats; j++ {
-				if r.seats[i+j] {
-					available = false
-					i += j
-					break
+	type seatRange struct {
+		start int
+		end   int
+	}
+	seatRanges := make(chan seatRange)
+	go func() {
+		for i := 0; i <= len(r.seats)-numSeats; i++ {
+			if !r.seats[i] {
+				available := true
+				for j := 1; j < numSeats; j++ {
+					if r.seats[i+j] {
+						available = false
+						i += j
+						break
+					}
 				}
-			}
-			if available {
-				for j := 0; j < numSeats; j++ {
-					r.seats[i+j] = true
-					seats = append(seats, i+j+1)
+				if available {
+					seatRanges <- seatRange{i, i + numSeats - 1}
 				}
-				return seats, nil
 			}
 		}
+		close(seatRanges)
+	}()
+	var seats []int
+	for sr := range seatRanges {
+		for j := sr.start; j <= sr.end; j++ {
+			r.seats[j] = true
+			seats = append(seats, j+1)
+		}
+		return seats, nil
 	}
 	return nil, errors.New("not enough seats available")
 }
 
 // CancelReservation is a method of the Reservation struct. It takes a slice of seat numbers as input and returns an error.
-// It cancels the reservation of the seats in the slice by setting their corresponding values in the seats slice to false.
-// If any seat number in the slice is invalid or not reserved, the method returns an error.
 func (r *Reservation) CancelReservation(seats []int) error {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
+
+	// Create a channel to receive errors from the goroutines.
+	errChan := make(chan error)
+
+	// Create a waitgroup to wait for all goroutines to finish.
+	var wg sync.WaitGroup
+
+	// Iterate through the seats and create a goroutine for each seat.
 	for _, seat := range seats {
-		if seat < 1 || seat > len(r.seats) {
-			return fmt.Errorf("invalid seat number: %d", seat)
-		}
-		if !r.seats[seat-1] {
-			return fmt.Errorf("seat %d is not reserved", seat)
-		}
-		r.seats[seat-1] = false
+		wg.Add(1)
+		go func(seat int) {
+			defer wg.Done()
+
+			// Check if the seat number is valid and the seat is reserved.
+			if seat < 1 || seat > len(r.seats) {
+				errChan <- fmt.Errorf("invalid seat number: %d", seat)
+				return
+			}
+			if !r.seats[seat-1] {
+				errChan <- fmt.Errorf("seat %d is not reserved", seat)
+				return
+			}
+
+			// Cancel the reservation for the seat.
+			r.seats[seat-1] = false
+		}(seat)
 	}
+
+	// Close the channel after all goroutines have finished.
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	// Check for errors returned from the goroutines.
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
